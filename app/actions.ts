@@ -7,8 +7,10 @@ import {
   generateMvpReport as generateMvp,
   generateCompetitorReport as generateCompetitor,
 } from "./lib/solo-founders";
+import { analyzeTrend, generateGtmPlaybook } from "./lib/founder-tools";
 import type { AnalyzeResult, MvpResultType, CompetitorResultType } from "./lib/types";
 import type { MvpInput, CompetitorInput } from "./lib/solo-founders";
+import type { TrendInput, GtmInput } from "./lib/founder-tools";
 
 export async function analyzeIdea(idea: string): Promise<AnalyzeResult> {
   const trimmedIdea = idea.trim();
@@ -54,6 +56,20 @@ export async function assessMvp(input: MvpInput): Promise<MvpResultType> {
     ok: true,
     report: generateMvp({ idea: trimmedIdea })
   };
+}
+
+export async function assessTrend(input: TrendInput) {
+  const trimmed = input.trend.trim();
+  if (trimmed.length < 10) return { ok: false as const, error: "Describe the trend in more detail (at least 10 characters)." };
+  return { ok: true as const, report: analyzeTrend({ trend: trimmed }) };
+}
+
+export async function generateGtm(input: GtmInput) {
+  const idea = input.idea.trim();
+  const customer = input.targetCustomer.trim();
+  if (idea.length < 10) return { ok: false as const, error: "Describe your idea in at least a sentence." };
+  if (customer.length < 3) return { ok: false as const, error: "Describe your target customer briefly." };
+  return { ok: true as const, report: generateGtmPlaybook({ idea, targetCustomer: customer }) };
 }
 
 export async function assessCompetitors(input: CompetitorInput): Promise<CompetitorResultType> {
