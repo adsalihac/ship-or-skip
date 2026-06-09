@@ -14,15 +14,15 @@ const exampleIdeas = [
 ];
 
 function difficultyColor(score: number): string {
-  if (score <= 3) return "text-green-600";
-  if (score <= 6) return "text-amber-600";
-  return "text-red-600";
+  if (score <= 3) return "text-success";
+  if (score <= 6) return "text-accent";
+  return "text-danger";
 }
 
 function difficultyBg(score: number): string {
-  if (score <= 3) return "bg-green-50 border-green-200";
-  if (score <= 6) return "bg-amber-50 border-amber-200";
-  return "bg-red-50 border-red-200";
+  if (score <= 3) return "bg-success-light border-success-border";
+  if (score <= 6) return "bg-accent-light border-accent-border";
+  return "bg-danger-light border-danger-border";
 }
 
 export function MvpCalculator() {
@@ -54,22 +54,22 @@ export function MvpCalculator() {
 
   return (
     <div className="mx-auto max-w-[760px]">
-      <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-[13px] font-medium text-gray-600">
-        <Hammer className="size-4 text-gray-700" aria-hidden="true" />
+      <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-gray-100 px-3 py-1.5 text-[13px] font-semibold text-foreground">
+        <Hammer className="size-4" aria-hidden="true" />
         Scope your build
       </div>
 
-      <h1 className="text-[40px] font-semibold leading-[1.05] text-gray-950 md:text-[48px]">
+      <h1 className="text-[44px] font-bold leading-[1.05] tracking-tight text-foreground md:text-[52px]">
         MVP Scope Calculator
       </h1>
-      <p className="mt-4 text-[15px] leading-6 text-gray-600">
+      <p className="mt-4 text-[15px] leading-6 text-muted">
         What&apos;s the smallest thing you can build in 2 weeks? Describe your idea and get a
         tailored scoping recommendation.
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-8 rounded-[12px] border border-gray-200 bg-white p-4 shadow-sm">
-        <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-3">
-          <span className="text-[13px] font-semibold uppercase text-gray-500">Describe Your Idea</span>
+      <form onSubmit={handleSubmit} className="mt-8 rounded-xl border border-border bg-white p-4 shadow-sm">
+        <div className="flex items-center justify-between gap-3 border-b border-border pb-3">
+          <span className="text-[13px] font-semibold uppercase text-muted">Describe Your Idea</span>
         </div>
 
         <textarea
@@ -77,7 +77,7 @@ export function MvpCalculator() {
           onChange={(e) => setIdea(e.target.value)}
           placeholder="Describe what you want to build..."
           rows={5}
-          className="mt-4 min-h-32 w-full resize-y rounded-[8px] border border-gray-200 bg-gray-50 p-4 text-[15px] leading-6 text-gray-950 outline-none transition placeholder:text-gray-400 focus:border-gray-400 focus:bg-white"
+          className="mt-4 min-h-32 w-full resize-y rounded-lg border border-border bg-surface p-4 text-[15px] leading-6 text-foreground outline-none transition placeholder:text-muted/60 focus:border-foreground focus:bg-white"
         />
 
         <div className="mt-3 flex min-w-0 flex-wrap gap-2">
@@ -90,20 +90,20 @@ export function MvpCalculator() {
                 setResult(null);
                 setError("");
               }}
-              className="min-w-0 max-w-full truncate rounded-full border border-gray-200 bg-white px-3 py-1.5 text-[13px] font-medium text-gray-600 transition hover:bg-gray-50"
+              className="min-w-0 max-w-full truncate rounded-full border border-border bg-white px-3 py-1.5 text-[13px] font-medium text-muted transition hover:border-foreground hover:bg-gray-100 hover:text-foreground"
             >
               {example}
             </button>
           ))}
         </div>
 
-        {error && <p className="mt-3 text-[13px] font-medium text-red-600">{error}</p>}
+        {error && <p className="mt-3 text-[13px] font-medium text-danger">{error}</p>}
 
         <div className="mt-4 flex justify-end">
           <button
             type="submit"
             disabled={isPending}
-            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[8px] bg-gray-950 px-5 py-2.5 text-[15px] font-semibold text-white transition hover:bg-gray-800 disabled:bg-gray-400 sm:w-auto"
+            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-foreground px-5 py-2.5 text-[15px] font-semibold text-white shadow-sm transition hover:bg-gray-800 disabled:bg-muted/40 sm:w-auto"
           >
             {isPending ? (
               <Loader2 className="size-4 animate-spin" aria-hidden="true" />
@@ -117,48 +117,48 @@ export function MvpCalculator() {
 
       {result && (
         <div className="mt-6 space-y-4">
-          <div className="rounded-[12px] border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="rounded-xl border border-border bg-white p-5 shadow-sm">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-[13px] font-semibold uppercase text-gray-500">Execution Difficulty</p>
-                <p className={`mt-1 text-[32px] font-semibold ${difficultyColor(result.difficultyScore)}`}>
+                <p className="text-[13px] font-semibold uppercase text-muted">Execution Difficulty</p>
+                <p className={`mt-1 text-[32px] font-bold ${difficultyColor(result.difficultyScore)}`}>
                   {result.difficultyScore}/10
                 </p>
               </div>
-              <div className={`rounded-[8px] border px-3 py-1.5 ${difficultyBg(result.difficultyScore)}`}>
+              <div className={`rounded-lg border px-3 py-1.5 ${difficultyBg(result.difficultyScore)}`}>
                 <span className={`text-[13px] font-semibold ${difficultyColor(result.difficultyScore)}`}>
                   {result.difficultyLabel}
                 </span>
               </div>
             </div>
 
-            <div className="mt-4 h-2 rounded-full bg-gray-200">
+            <div className="mt-4 h-2 rounded-full bg-border">
               <div
                 className={`h-2 rounded-full transition-all ${
                   result.difficultyScore <= 3
-                    ? "bg-green-500"
+                    ? "bg-success"
                     : result.difficultyScore <= 6
-                      ? "bg-amber-500"
-                      : "bg-red-500"
+                      ? "bg-accent"
+                      : "bg-danger"
                 }`}
                 style={{ width: `${result.difficultyScore * 10}%` }}
               />
             </div>
           </div>
 
-          <div className="rounded-[12px] border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-[13px] font-semibold uppercase text-gray-500">Time Estimate</p>
-            <p className="mt-1 text-[24px] font-semibold text-gray-950">{result.timeEstimate}</p>
+          <div className="rounded-xl border border-border bg-white p-5 shadow-sm">
+            <p className="text-[13px] font-semibold uppercase text-muted">Time Estimate</p>
+            <p className="mt-1 text-[24px] font-bold text-foreground">{result.timeEstimate}</p>
           </div>
 
-          <div className="rounded-[12px] border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-[13px] font-semibold uppercase text-gray-500">Smallest MVP</p>
-            <p className="mt-3 text-[15px] leading-6 text-gray-700">{result.smallestMvp}</p>
+          <div className="rounded-xl border border-border bg-white p-5 shadow-sm">
+            <p className="text-[13px] font-semibold uppercase text-muted">Smallest MVP</p>
+            <p className="mt-3 text-[15px] leading-6 text-foreground">{result.smallestMvp}</p>
           </div>
 
-          <div className="rounded-[12px] border border-gray-200 bg-gray-50 p-5">
-            <p className="text-[13px] font-semibold uppercase text-gray-500">Why</p>
-            <p className="mt-3 text-[15px] leading-6 text-gray-700">{result.reasoning}</p>
+          <div className="rounded-xl border border-accent-border bg-accent-light p-5">
+            <p className="text-[13px] font-semibold uppercase text-accent-dark">Why</p>
+            <p className="mt-3 text-[15px] leading-6 text-foreground">{result.reasoning}</p>
           </div>
         </div>
       )}
