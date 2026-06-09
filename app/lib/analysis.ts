@@ -427,9 +427,3 @@ export function generateReport(rawIdea: string): AnalysisReport {
     ...EXAMPLE_OVERRIDES[idea]
   };
 }
-
-export const exampleIdeas = [
-  "AI resume builder for recent graduates applying to tech jobs",
-  "Fitness accountability app for busy professionals",
-  "Local events marketplace for independent venues and neighborhood organizers"
-];

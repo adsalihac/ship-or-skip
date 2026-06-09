@@ -1,30 +1,38 @@
 "use client";
 
-import { ArrowRight, BarChart3, FileText, Loader2, Search } from "lucide-react";
-import { useMemo, useState, useTransition } from "react";
+import { BarChart3, FileText, Loader2, Search } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
 import { analyzeIdea } from "../actions";
 import { trackEvent } from "../lib/analytics-client";
 import type { AnalysisReport } from "../lib/types";
 import { ReportView } from "./ReportView";
 
-type IdeaAnalyzerProps = {
-  exampleReports: AnalysisReport[];
-};
-
-const placeholders = [
+const ideaExamples = [
   "AI expense tracker for freelancers",
   "Marketplace for local tutors",
   "App that converts YouTube videos into flashcards",
   "SaaS platform for React Native release management"
 ];
 
-export function IdeaAnalyzer({ exampleReports }: IdeaAnalyzerProps) {
+export function IdeaAnalyzer() {
   const [idea, setIdea] = useState("");
   const [report, setReport] = useState<AnalysisReport | null>(null);
   const [error, setError] = useState("");
+  const [shouldScrollToReport, setShouldScrollToReport] = useState(false);
   const [isPending, startTransition] = useTransition();
   const characterCount = idea.trim().length;
-  const currentPlaceholder = useMemo(() => placeholders[0], []);
+
+  useEffect(() => {
+    if (!shouldScrollToReport || !report) {
+      return;
+    }
+
+    document.getElementById("analysis")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+    setShouldScrollToReport(false);
+  }, [report, shouldScrollToReport]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -43,6 +51,7 @@ export function IdeaAnalyzer({ exampleReports }: IdeaAnalyzerProps) {
       }
 
       setReport(result.report);
+      setShouldScrollToReport(true);
       trackEvent("report_generation", {
         decision: result.report.decision,
         score: result.report.score
@@ -50,15 +59,13 @@ export function IdeaAnalyzer({ exampleReports }: IdeaAnalyzerProps) {
     });
   }
 
-  function loadExample(exampleReport: AnalysisReport) {
-    setIdea(exampleReport.idea);
-    setReport(exampleReport);
+  function selectExample(example: string) {
+    setIdea(example);
+    setReport(null);
     setError("");
     trackEvent("conversion_event", {
-      action: "example_report_preview",
-      example: exampleReport.idea,
-      decision: exampleReport.decision,
-      score: exampleReport.score
+      action: "idea_example_selected",
+      example
     });
   }
 
@@ -92,22 +99,22 @@ export function IdeaAnalyzer({ exampleReports }: IdeaAnalyzerProps) {
             id="idea"
             value={idea}
             onChange={(event) => setIdea(event.target.value)}
-            placeholder={`Describe your startup idea... e.g. ${currentPlaceholder}`}
+            placeholder="Describe your startup idea..."
             maxLength={1600}
             rows={6}
             className="mt-4 min-h-40 w-full resize-y rounded-[8px] border border-gray-200 bg-gray-50 p-4 text-[15px] leading-6 text-gray-950 outline-none transition placeholder:text-gray-400 focus:border-gray-400 focus:bg-white"
           />
 
           <div className="mt-3 flex min-w-0 flex-wrap gap-2">
-            {placeholders.slice(1).map((sample) => (
+            {ideaExamples.map((example) => (
               <button
                 type="button"
-                key={sample}
-                onClick={() => setIdea(sample)}
+                key={example}
+                onClick={() => selectExample(example)}
                 className="min-w-0 max-w-full truncate rounded-full border border-gray-200 bg-white px-3 py-1.5 text-[13px] font-medium text-gray-600 transition hover:bg-gray-50"
-                title={sample}
+                title={example}
               >
-                {sample}
+                {example}
               </button>
             ))}
           </div>
@@ -126,7 +133,7 @@ export function IdeaAnalyzer({ exampleReports }: IdeaAnalyzerProps) {
           </div>
         </form>
 
-        <div id="analysis" className="mt-6 min-w-0">
+        <div id="analysis" className="mt-6 min-w-0 scroll-mt-20">
           {report ? (
             <ReportView report={report} />
           ) : (
@@ -177,43 +184,6 @@ export function IdeaAnalyzer({ exampleReports }: IdeaAnalyzerProps) {
         </div>
       </section>
 
-      <section id="examples" className="mx-auto max-w-[1200px] px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-[13px] font-semibold uppercase text-gray-500">Example Reports</p>
-            <h2 className="mt-2 text-[24px] font-semibold text-gray-950">Preview report quality</h2>
-          </div>
-          <p className="max-w-lg text-[13px] leading-5 text-gray-600">
-            Sample assessments show how different startup categories score across the same framework.
-          </p>
-        </div>
-        <div className="grid gap-4 lg:grid-cols-3">
-          {exampleReports.map((exampleReport) => (
-            <article key={exampleReport.id} className="rounded-[12px] border border-gray-200 bg-white p-5 shadow-sm">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h3 className="text-[18px] font-semibold text-gray-950">{exampleReport.idea}</h3>
-                  <p className="mt-2 text-[13px] leading-5 text-gray-600">{exampleReport.summary}</p>
-                </div>
-                <span className="shrink-0 text-[24px] font-semibold text-gray-950">{exampleReport.score}</span>
-              </div>
-              <div className="mt-4 flex items-center justify-between gap-3">
-                <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-[13px] font-semibold text-gray-700">
-                  {exampleReport.decision}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => loadExample(exampleReport)}
-                  className="inline-flex items-center gap-2 rounded-[8px] border border-gray-300 bg-white px-3 py-2 text-[13px] font-semibold text-gray-950 transition hover:bg-gray-50"
-                >
-                  Preview
-                  <ArrowRight className="size-4" aria-hidden="true" />
-                </button>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
     </>
   );
 }

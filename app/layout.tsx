@@ -14,6 +14,16 @@ export const metadata: Metadata = {
   description:
     "Evaluate startup ideas before building. Analyze market demand, competition, monetization, execution difficulty, and growth potential in seconds.",
   applicationName: "ShipOrSkip",
+  icons: {
+    icon: [
+      {
+        url: "/favicon.svg",
+        type: "image/svg+xml"
+      }
+    ],
+    shortcut: "/favicon.svg",
+    apple: "/logo-mark.svg"
+  },
   alternates: {
     canonical: "/"
   },
