@@ -59,7 +59,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={GeistSans.className}>
+      <body className={`${GeistSans.className} flex min-h-screen flex-col`}>
         <PostHogProvider>{children}</PostHogProvider>
       </body>
     </html>
