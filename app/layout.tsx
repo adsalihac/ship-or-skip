@@ -135,7 +135,7 @@ export default function RootLayout({
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Buy me a coffee"
-                className="inline-flex items-center gap-2 rounded-[8px] bg-accent px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.08em] text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-accent-dark hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                className="inline-flex items-center gap-2 rounded-[8px] bg-foreground px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.08em] text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-800 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
               >
                 <span className="flex size-5 items-center justify-center rounded-full bg-white/20">
                   <Coffee className="h-3.5 w-3.5" />
