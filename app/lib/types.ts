@@ -49,3 +49,11 @@ export type AnalyzeResult =
       ok: false;
       error: string;
     };
+
+export type MvpResultType =
+  | { ok: true; report: import("./solo-founders").MvpResult }
+  | { ok: false; error: string };
+
+export type CompetitorResultType =
+  | { ok: true; report: import("./solo-founders").CompetitorResult }
+  | { ok: false; error: string };
