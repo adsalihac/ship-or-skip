@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, BarChart3, FileText, Loader2, Search, Target } from "lucide-react";
+import { ArrowRight, BarChart3, FileText, Loader2, Search } from "lucide-react";
 import { useMemo, useState, useTransition } from "react";
 import { analyzeIdea } from "../actions";
 import { trackEvent } from "../lib/analytics-client";
@@ -65,61 +65,66 @@ export function IdeaAnalyzer({ exampleReports }: IdeaAnalyzerProps) {
   return (
     <>
       <section className="mx-auto max-w-[1200px] px-4 pb-12 pt-10 sm:px-6 lg:px-8 lg:pb-16 lg:pt-14">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
-          <div className="min-w-0">
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-[13px] font-medium text-gray-600">
-              <BarChart3 className="size-4 text-gray-700" aria-hidden="true" />
-              Startup due diligence for builders
-            </div>
-            <h1 className="max-w-2xl text-[40px] font-semibold leading-[1.05] text-gray-950 md:text-[48px]">
-              Stop building products nobody wants.
-            </h1>
-            <p className="mt-5 max-w-xl text-[15px] leading-6 text-gray-600">
-              Get an objective evaluation of your startup idea before investing months into development.
-            </p>
+        <div className="mx-auto max-w-[760px] text-center">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-[13px] font-medium text-gray-600">
+            <BarChart3 className="size-4 text-gray-700" aria-hidden="true" />
+            Startup due diligence for builders
           </div>
+          <h1 className="mx-auto max-w-2xl text-[40px] font-semibold leading-[1.05] text-gray-950 md:text-[48px]">
+            Stop building products nobody wants.
+          </h1>
+          <p className="mx-auto mt-5 max-w-xl text-[15px] leading-6 text-gray-600">
+            Get an objective evaluation of your startup idea before investing months into development.
+          </p>
+        </div>
 
-          <form onSubmit={handleSubmit} className="rounded-[12px] border border-gray-200 bg-white p-4 shadow-sm">
-            <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-3">
+        <form onSubmit={handleSubmit} className="mt-8 rounded-[12px] border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-3">
+            <div className="flex items-center gap-3">
               <label htmlFor="idea" className="text-[13px] font-semibold uppercase text-gray-500">
                 Idea Input
               </label>
-              <span className="text-[13px] font-medium text-gray-500">{characterCount}/1600</span>
             </div>
-            <textarea
-              id="idea"
-              value={idea}
-              onChange={(event) => setIdea(event.target.value)}
-              placeholder={`Describe your startup idea... e.g. ${currentPlaceholder}`}
-              rows={8}
-              className="mt-4 min-h-48 w-full resize-none rounded-[8px] border border-gray-200 bg-gray-50 p-4 text-[15px] leading-6 text-gray-950 outline-none transition placeholder:text-gray-400 focus:border-gray-400 focus:bg-white"
-            />
-            {error ? <p className="mt-3 text-[13px] font-medium text-red-600">{error}</p> : null}
-            <div className="mt-4 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-              <div className="flex min-w-0 flex-wrap gap-2 pb-1 xl:flex-nowrap xl:overflow-hidden xl:pb-0">
-                {placeholders.slice(1).map((sample) => (
-                  <button
-                    type="button"
-                    key={sample}
-                    onClick={() => setIdea(sample)}
-                    className="min-w-0 max-w-full truncate rounded-full border border-gray-200 bg-white px-3 py-1.5 text-[13px] font-medium text-gray-600 transition hover:bg-gray-50 xl:max-w-[230px] xl:shrink-0"
-                    title={sample}
-                  >
-                    {sample}
-                  </button>
-                ))}
-              </div>
+            <span className="text-[13px] font-medium text-gray-500">{characterCount}/1600</span>
+          </div>
+
+          <textarea
+            id="idea"
+            value={idea}
+            onChange={(event) => setIdea(event.target.value)}
+            placeholder={`Describe your startup idea... e.g. ${currentPlaceholder}`}
+            maxLength={1600}
+            rows={6}
+            className="mt-4 min-h-40 w-full resize-y rounded-[8px] border border-gray-200 bg-gray-50 p-4 text-[15px] leading-6 text-gray-950 outline-none transition placeholder:text-gray-400 focus:border-gray-400 focus:bg-white"
+          />
+
+          <div className="mt-3 flex min-w-0 flex-wrap gap-2">
+            {placeholders.slice(1).map((sample) => (
               <button
-                type="submit"
-                disabled={isPending}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[8px] bg-gray-950 px-5 py-2.5 text-[15px] font-semibold text-white transition hover:bg-gray-800 disabled:bg-gray-400"
+                type="button"
+                key={sample}
+                onClick={() => setIdea(sample)}
+                className="min-w-0 max-w-full truncate rounded-full border border-gray-200 bg-white px-3 py-1.5 text-[13px] font-medium text-gray-600 transition hover:bg-gray-50"
+                title={sample}
               >
-                {isPending ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <Search className="size-4" aria-hidden="true" />}
-                Analyze Idea
+                {sample}
               </button>
-            </div>
-          </form>
-        </div>
+            ))}
+          </div>
+
+          {error ? <p className="mt-3 text-[13px] font-medium text-red-600">{error}</p> : null}
+
+          <div className="mt-4 flex justify-end">
+            <button
+              type="submit"
+              disabled={isPending}
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[8px] bg-gray-950 px-5 py-2.5 text-[15px] font-semibold text-white transition hover:bg-gray-800 disabled:bg-gray-400 sm:w-auto"
+            >
+              {isPending ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <Search className="size-4" aria-hidden="true" />}
+              Analyze Idea
+            </button>
+          </div>
+        </form>
 
         <div id="analysis" className="mt-6 min-w-0">
           {report ? (
@@ -172,22 +177,6 @@ export function IdeaAnalyzer({ exampleReports }: IdeaAnalyzerProps) {
         </div>
       </section>
 
-      <section id="how-it-works" className="border-y border-gray-200 bg-gray-50">
-        <div className="mx-auto grid max-w-[1200px] gap-4 px-4 py-10 sm:px-6 md:grid-cols-3 lg:px-8">
-          {[
-            ["Step 1", "Describe your idea.", "Start with the customer, pain, and product concept."],
-            ["Step 2", "Evaluate the fundamentals.", "ShipOrSkip scores market, competition, monetization, execution, and distribution."],
-            ["Step 3", "Receive the decision report.", "Use the verdict to ship, validate more, or skip with confidence."]
-          ].map(([step, title, copy]) => (
-            <div key={step} className="rounded-[12px] border border-gray-200 bg-white p-5 shadow-sm">
-              <p className="text-[13px] font-semibold uppercase text-gray-500">{step}</p>
-              <h2 className="mt-3 text-[18px] font-semibold text-gray-950">{title}</h2>
-              <p className="mt-2 text-[13px] leading-5 text-gray-600">{copy}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
       <section id="examples" className="mx-auto max-w-[1200px] px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -223,31 +212,6 @@ export function IdeaAnalyzer({ exampleReports }: IdeaAnalyzerProps) {
               </div>
             </article>
           ))}
-        </div>
-      </section>
-
-      <section id="about" className="border-t border-gray-200 bg-gray-50">
-        <div className="mx-auto grid max-w-[1200px] gap-6 px-4 py-10 sm:px-6 md:grid-cols-[0.8fr_1.2fr] lg:px-8">
-          <div>
-            <p className="text-[13px] font-semibold uppercase text-gray-500">About</p>
-            <h2 className="mt-2 text-[24px] font-semibold text-gray-950">Built for pre-build due diligence</h2>
-          </div>
-          <div className="grid gap-3 md:grid-cols-2">
-            {[
-              ["One Input", "Describe the idea once with enough context to evaluate."],
-              ["One Analysis", "Review a consistent framework instead of a conversational answer."],
-              ["One Decision", "Leave with a build, validate, or skip recommendation."],
-              ["Low Overhead", "No accounts, database, or dashboard required for the MVP."]
-            ].map(([title, copy]) => (
-              <div key={title} className="rounded-[12px] border border-gray-200 bg-white p-4 shadow-sm">
-                <div className="mb-3 flex size-9 items-center justify-center rounded-[8px] border border-gray-200 bg-gray-50">
-                  <Target className="size-4 text-gray-700" aria-hidden="true" />
-                </div>
-                <h3 className="text-[15px] font-semibold text-gray-950">{title}</h3>
-                <p className="mt-1 text-[13px] leading-5 text-gray-600">{copy}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
     </>

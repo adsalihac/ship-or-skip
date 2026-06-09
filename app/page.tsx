@@ -31,14 +31,8 @@ export default function Home() {
             ShipOrSkip
           </a>
           <div className="flex items-center gap-5 text-[13px] font-medium text-gray-600">
-            <a href="#about" className="transition hover:text-gray-950">
-              About
-            </a>
             <a href="#examples" className="transition hover:text-gray-950">
               Examples
-            </a>
-            <a href="#how-it-works" className="transition hover:text-gray-950">
-              How It Works
             </a>
           </div>
         </nav>
