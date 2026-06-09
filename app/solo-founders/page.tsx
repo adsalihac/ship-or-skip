@@ -64,16 +64,12 @@ export default function SoloFoundersPage() {
             <h2 className="text-[13px] font-semibold uppercase tracking-wider text-muted">{category.name}</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {category.tools.map((tool) => {
-                const Icon = tool.icon;
                 return (
                   <Link
                     key={tool.href}
                     href={tool.href}
                     className="group relative overflow-hidden rounded-xl border border-border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
                   >
-                    <div className={`inline-flex rounded-xl bg-gradient-to-br ${tool.gradient} p-3 shadow-sm`}>
-                      <Icon className="size-5 text-white" aria-hidden="true" />
-                    </div>
                     <h3 className="mt-3 text-[15px] font-bold text-foreground">{tool.title}</h3>
                     <p className="mt-1 text-[13px] leading-5 text-muted">{tool.desc}</p>
                     <div className="mt-3 flex items-center gap-1 text-[12px] font-semibold text-foreground transition group-hover:translate-x-0.5">

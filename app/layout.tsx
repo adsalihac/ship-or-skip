@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { Outfit, Inter } from "next/font/google";
-import { Coffee, Github, GitPullRequest, Star, Compass } from "lucide-react";
+import { Coffee, Github, GitPullRequest, Star } from "lucide-react";
 import Link from "next/link";
 import "./globals.css";
 import { PostHogProvider } from "./components/PostHogProvider";
@@ -79,18 +79,9 @@ export default function RootLayout({
         <PostHogProvider>
           <header className="sticky top-0 z-20 border-b border-border bg-white">
             <nav className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center gap-6">
-                <Link href="/" className="inline-flex items-center" aria-label="ShipOrSkip home">
-                  <img src="/logo.svg" alt="ShipOrSkip" className="h-8 w-auto" />
-                </Link>
-                <Link
-                  href="/solo-founders"
-                  className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-muted transition hover:text-foreground"
-                >
-                  <Compass className="size-4" aria-hidden="true" />
-                  Solo Founders
-                </Link>
-              </div>
+              <Link href="/" className="inline-flex items-center" aria-label="ShipOrSkip home">
+                <img src="/logo.svg" alt="ShipOrSkip" className="h-8 w-auto" />
+              </Link>
               <div className="flex items-center gap-2">
                 <a
                   href={GITHUB_REPO_URL}

@@ -1,4 +1,5 @@
 import { IdeaAnalyzer } from "./components/IdeaAnalyzer";
+import { SoloFoundersCard } from "./components/SoloFoundersCard";
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -22,8 +23,9 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <main className="flex-1 pb-24">
+      <main className="flex-1">
         <IdeaAnalyzer />
+        <SoloFoundersCard />
       </main>
     </>
   );
