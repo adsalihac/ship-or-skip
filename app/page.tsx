@@ -1,7 +1,6 @@
 import { IdeaAnalyzer } from "./components/IdeaAnalyzer";
 import { HowItWorks } from "./components/HowItWorks";
 import { FeaturedTools } from "./components/FeaturedTools";
-import { SoloFoundersCard } from "./components/SoloFoundersCard";
 
 const structuredData = {
   "@context": "https://schema.org",

@@ -88,7 +88,7 @@ export function IdeaAnalyzer() {
         <form onSubmit={handleSubmit} className="mt-8 rounded-xl border border-border bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between gap-3 border-b border-border pb-3">
             <div className="flex items-center gap-3">
-              <label htmlFor="idea" className="text-[13px] font-semibold uppercase text-muted">
+              <label htmlFor="idea-input" className="text-[13px] font-semibold uppercase text-muted">
                 Idea Input
               </label>
             </div>
@@ -96,7 +96,7 @@ export function IdeaAnalyzer() {
           </div>
 
           <textarea
-            id="idea"
+            id="idea-input"
             value={idea}
             onChange={(event) => setIdea(event.target.value)}
             placeholder="Describe your startup idea..."
