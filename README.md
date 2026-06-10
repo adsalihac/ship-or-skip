@@ -16,7 +16,7 @@ Open `http://localhost:3000`.
 Copy `.env.example` to `.env.local` if you want analytics or a custom canonical URL.
 
 ```bash
-NEXT_PUBLIC_SITE_URL=https://shiporskip.com
+NEXT_PUBLIC_SITE_URL=https://https://ship-or-skip-two.vercel.app
 NEXT_PUBLIC_POSTHOG_KEY=
 NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ```

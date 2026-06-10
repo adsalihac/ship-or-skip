@@ -70,7 +70,7 @@ async function shareReport(report: AnalysisReport) {
     await navigator.share({
       title: "ShipOrSkip result",
       text: report.shareText,
-      url: "https://shiporskip.com"
+      url: "https://https://ship-or-skip-two.vercel.app"
     });
     return;
   }

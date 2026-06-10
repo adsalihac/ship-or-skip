@@ -541,7 +541,7 @@ export function generateReport(rawIdea: string): AnalysisReport {
   const risks = buildRisks(text, competitionRisk, distributionLevel, buildDifficulty, growthScore, timelineScore);
   const opportunities = buildOpportunities(text, demandLevel, monetizationLevel, growthLevel, timelineLevel);
   const recommendation = buildRecommendation(decision, text, score);
-  const shareText = `My startup idea scored ${score}/100 on ShipOrSkip.\n\nVerdict: ${decision}\n\nTry your idea at shiporskip.com`;
+  const shareText = `My startup idea scored ${score}/100 on ShipOrSkip.\n\nVerdict: ${decision}\n\nTry your idea at https://ship-or-skip-two.vercel.app`;
   const report = {
     id: stableId(idea),
     idea,

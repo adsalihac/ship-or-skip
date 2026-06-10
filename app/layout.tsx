@@ -6,7 +6,7 @@ import Link from "next/link";
 import "./globals.css";
 import { PostHogProvider } from "./components/PostHogProvider";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://shiporskip.com";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://https://ship-or-skip-two.vercel.app";
 const GITHUB_REPO_URL = "https://github.com/adsalihac/ship-or-skip";
 const GITHUB_CONTRIBUTE_URL = `${GITHUB_REPO_URL}/fork`;
 const BUY_ME_COFFEE_URL = "https://www.buymeacoffee.com/adsalihac";
