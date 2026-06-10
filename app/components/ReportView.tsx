@@ -7,8 +7,10 @@ import {
   ClipboardCopy,
   Gauge,
   LineChart,
+  Rocket,
   Share2,
   ShieldCheck,
+  Sparkles,
   Target,
   TrendingUp
 } from "lucide-react";
@@ -32,12 +34,14 @@ const decisionCopy: Record<Decision, string> = {
   SKIP: "Do not build yet"
 };
 
-const sectionIcons = {
+const sectionIcons: Record<string, typeof Target> = {
   "Market Demand": TrendingUp,
   "Competition Analysis": ShieldCheck,
   "Monetization Analysis": BarChart3,
   "Build Complexity": Gauge,
-  "Distribution Analysis": Target
+  "Distribution Analysis": Target,
+  "Growth Potential": Rocket,
+  "Timeline Fit": Sparkles
 };
 
 function getScoreTone(score: number) {

@@ -3,9 +3,11 @@ import type {
   AnalysisSection,
   Decision,
   DifficultyLevel,
+  GrowthLevel,
   MonetizationLevel,
   ScoreMetric,
-  SignalLevel
+  SignalLevel,
+  TimelineLevel
 } from "./types";
 
 const DEMAND_KEYWORDS = [
@@ -91,6 +93,62 @@ const CONSUMER_KEYWORDS = [
   "local"
 ];
 
+const GROWTH_KEYWORDS = [
+  "template",
+  "api",
+  "plugin",
+  "integration",
+  "embed",
+  "share",
+  "collaboration",
+  "community",
+  "marketplace",
+  "viral",
+  "referral",
+  "network",
+  "platform",
+  "ecosystem",
+  "widget"
+];
+
+const TIMELINE_KEYWORDS = [
+  "regulation",
+  "compliance",
+  "new",
+  "emerging",
+  "trend",
+  "shift",
+  "remote",
+  "post-covid",
+  "ai",
+  "privacy",
+  "policy",
+  "mandate",
+  "deadline"
+];
+
+const SUBSCRIPTION_KEYWORDS = [
+  "subscription",
+  "saas",
+  "monthly",
+  "annual",
+  "recurring",
+  "retainer",
+  "tier",
+  "plan"
+];
+
+const TRANSACTION_KEYWORDS = [
+  "marketplace",
+  "commission",
+  "take-rate",
+  "payment",
+  "checkout",
+  "booking",
+  "fee",
+  "per-transaction"
+];
+
 const EXAMPLE_OVERRIDES: Record<string, Partial<AnalysisReport>> = {};
 
 function clamp(value: number, min = 1, max = 10) {
@@ -117,6 +175,18 @@ function monetizationFromScore(score: number): MonetizationLevel {
   if (score >= 7.5) return "Easy";
   if (score >= 5) return "Moderate";
   return "Difficult";
+}
+
+function growthFromScore(score: number): GrowthLevel {
+  if (score >= 7) return "High";
+  if (score >= 4.5) return "Moderate";
+  return "Low";
+}
+
+function timelineFromScore(score: number): TimelineLevel {
+  if (score >= 7) return "Urgent";
+  if (score >= 4.5) return "Neutral";
+  return "Early";
 }
 
 function decisionFromScore(score: number): Decision {
@@ -167,7 +237,9 @@ function buildRisks(
   text: string,
   competitionRisk: SignalLevel,
   distribution: DifficultyLevel,
-  buildDifficulty: DifficultyLevel
+  buildDifficulty: DifficultyLevel,
+  growthScore: number,
+  timelineScore: number
 ) {
   const risks: string[] = [];
 
@@ -191,6 +263,14 @@ function buildRisks(
     risks.push("AI output quality and data access may become the main trust constraint.");
   }
 
+  if (growthScore < 4) {
+    risks.push("Low organic growth potential means every new customer comes with acquisition cost.");
+  }
+
+  if (timelineScore < 4) {
+    risks.push("No clear timing catalyst makes it harder to prioritize this over competing ideas.");
+  }
+
   if (risks.length < 3) {
     risks.push("The buyer pain may be real but not urgent enough to trigger paid adoption.");
   }
@@ -203,10 +283,10 @@ function buildRisks(
     risks.push("The first acquisition channel is not proven yet.");
   }
 
-  return risks.slice(0, 3);
+  return risks.slice(0, 4);
 }
 
-function buildOpportunities(text: string, demand: SignalLevel, monetization: MonetizationLevel) {
+function buildOpportunities(text: string, demand: SignalLevel, monetization: MonetizationLevel, growthLevel: GrowthLevel, timelineLevel: TimelineLevel) {
   const opportunities: string[] = [];
 
   if (demand === "High") {
@@ -215,6 +295,14 @@ function buildOpportunities(text: string, demand: SignalLevel, monetization: Mon
 
   if (monetization === "Easy") {
     opportunities.push("A subscription or usage-based price can be tested early.");
+  }
+
+  if (growthLevel === "High") {
+    opportunities.push("Compounding distribution mechanics can reduce long-term CAC through virality or reuse.");
+  }
+
+  if (timelineLevel === "Urgent") {
+    opportunities.push("Market timing creates a narrow window — moving fast can capture positional advantage.");
   }
 
   if (containsAudience(text)) {
@@ -229,6 +317,10 @@ function buildOpportunities(text: string, demand: SignalLevel, monetization: Mon
     opportunities.push("A constrained geography can make early supply and demand easier to validate.");
   }
 
+  if (text.includes("api")) {
+    opportunities.push("An API-first approach enables self-serve adoption and partner integrations.");
+  }
+
   if (opportunities.length < 3) {
     opportunities.push("A narrow landing page test can validate intent before product work.");
   }
@@ -237,7 +329,7 @@ function buildOpportunities(text: string, demand: SignalLevel, monetization: Mon
     opportunities.push("Manual service delivery can simulate the product and reveal the strongest wedge.");
   }
 
-  return opportunities.slice(0, 3);
+  return opportunities.slice(0, 4);
 }
 
 function buildRecommendation(decision: Decision, text: string, score: number) {
@@ -276,6 +368,10 @@ export function generateReport(rawIdea: string): AnalysisReport {
   const b2bMatches = countMatches(text, B2B_KEYWORDS);
   const complexityMatches = countMatches(text, COMPLEXITY_KEYWORDS);
   const consumerMatches = countMatches(text, CONSUMER_KEYWORDS);
+  const growthMatches = countMatches(text, GROWTH_KEYWORDS);
+  const timelineMatches = countMatches(text, TIMELINE_KEYWORDS);
+  const subMatches = countMatches(text, SUBSCRIPTION_KEYWORDS);
+  const txMatches = countMatches(text, TRANSACTION_KEYWORDS);
   const hasAudience = containsAudience(text);
   const wordCount = idea.split(/\s+/).filter(Boolean).length;
 
@@ -286,6 +382,8 @@ export function generateReport(rawIdea: string): AnalysisReport {
   const executionScore = clamp(8.5 - complexityMatches * 0.8 + (text.includes("no-code") ? 0.5 : 0));
   const distributionScore = clamp(6.5 + (hasAudience ? 1 : 0) + b2bMatches * 0.35 - consumerMatches * 0.75 - (text.includes("marketplace") ? 1.1 : 0));
   const founderAdvantageScore = clamp(4.8 + (hasAudience ? 1.4 : 0) + (text.includes("developer") ? 1 : 0) + (text.includes("react native") ? 1.2 : 0) + (wordCount > 18 ? 0.8 : 0));
+  const growthScore = clamp(3.5 + growthMatches * 0.9 + (text.includes("api") ? 1 : 0) + (text.includes("platform") ? 0.8 : 0) + (hasAudience ? 0.6 : 0));
+  const timelineScore = clamp(5 + timelineMatches * 0.7 + (text.includes("ai") ? 1 : 0) + (text.includes("regulation") ? 1.2 : 0) - (text.includes("another") ? 0.5 : 0));
 
   const overall = Math.round(
     marketScore * 9.8 +
@@ -293,15 +391,19 @@ export function generateReport(rawIdea: string): AnalysisReport {
       monetizationScore * 9.2 +
       executionScore * 7.2 +
       distributionScore * 8.1 +
-      founderAdvantageScore * 7.3
+      founderAdvantageScore * 7.3 +
+      growthScore * 6.8 +
+      timelineScore * 5.9
   );
-  const score = Math.min(96, Math.max(28, Math.round(overall / 5.0)));
+  const score = Math.min(96, Math.max(28, Math.round(overall / 6.0)));
   const decision = decisionFromScore(score);
   const demandLevel = levelFromScore(marketScore);
   const competitionRisk = levelFromScore(competitionRiskRaw);
   const monetizationLevel = monetizationFromScore(monetizationScore);
   const buildDifficulty = difficultyFromScore(executionScore);
   const distributionLevel = difficultyFromScore(distributionScore);
+  const growthLevel = growthFromScore(growthScore);
+  const timelineLevel = timelineFromScore(timelineScore);
 
   const metrics = [
     buildMetric(
@@ -339,16 +441,28 @@ export function generateReport(rawIdea: string): AnalysisReport {
       founderAdvantageScore,
       founderAdvantageScore >= 7 ? "Strong" : founderAdvantageScore >= 5 ? "Emerging" : "Unclear",
       "Rewards narrow customer insight, domain specificity, and credible unfair advantage."
+    ),
+    buildMetric(
+      "Growth Potential",
+      growthScore,
+      growthLevel,
+      "Measures organic virality, network effects, and compounding distribution mechanics."
+    ),
+    buildMetric(
+      "Timeline Fit",
+      timelineScore,
+      timelineLevel === "Urgent" ? "Now" : timelineLevel === "Neutral" ? "Anytime" : "Early",
+      "Assesses whether regulatory tailwinds, market shifts, or seasonal timing make this a time-sensitive opportunity."
     )
   ];
 
   const summaryByDecision: Record<Decision, string> = {
     SHIP:
-      "This idea has enough demand, monetization clarity, and reachable audience definition to justify a narrow MVP. The main task is keeping scope disciplined while validating buyer urgency.",
+      "This idea has enough demand, monetization clarity, growth potential, and reachable audience definition to justify a narrow MVP. The main task is keeping scope disciplined while validating buyer urgency.",
     "VALIDATE MORE":
-      "This idea shows promise, but it needs sharper evidence before a serious build. Validate demand, pricing, and the first acquisition channel before committing months of product work.",
+      "This idea shows promise across core dimensions, but it needs sharper evidence before a serious build. Validate demand, pricing, the first acquisition channel, and timing signals before committing months of product work.",
     SKIP:
-      "This idea currently lacks enough urgency, differentiation, or distribution clarity to justify a full build. A narrower customer segment or more painful workflow is needed first."
+      "This idea currently lacks enough urgency, differentiation, growth mechanics, or distribution clarity to justify a full build. A narrower customer segment or more painful workflow is needed first."
   };
 
   const sections = {
@@ -401,11 +515,31 @@ export function generateReport(rawIdea: string): AnalysisReport {
         consumerMatches > 0 ? "Consumer adoption may depend on trust, habit formation, or network effects." : "A focused professional segment can support direct sales validation.",
         "The first channel should be proven before product expansion."
       ]
+    ),
+    growthPotential: section(
+      "Growth Potential",
+      growthLevel,
+      `${growthLevel} organic growth potential based on distribution mechanics and compounding effects.`,
+      [
+        growthMatches > 0 ? "The idea contains viral or network-effect mechanics that reduce CAC over time." : "Growth will likely depend on direct acquisition spend and content marketing.",
+        text.includes("api") || text.includes("integration") ? "Platform distribution through APIs or integrations can create self-serve adoption loops." : "Distribution needs a clear channel strategy from day one.",
+        text.includes("marketplace") ? "Liquidity is the primary growth variable — density creates retention." : "Paid acquisition math must be validated before scaling."
+      ]
+    ),
+    timelineFit: section(
+      "Timeline Fit",
+      timelineLevel,
+      `${timelineLevel === "Urgent" ? "Time-sensitive" : timelineLevel === "Neutral" ? "Window is open" : "Market may still be forming"} — timing assessment based on regulatory and market signals.`,
+      [
+        timelineMatches > 0 ? "Regulatory, policy, or market shift signals suggest a narrowing entry window." : "No strong timing pressure detected — you can validate methodically.",
+        text.includes("ai") ? "AI-native opportunities face a 6–12 month competitive window before incumbents respond." : "The timeline advantage comes from execution speed, not market timing.",
+        text.includes("compliance") || text.includes("regulation") ? "Regulatory tailwinds can accelerate enterprise adoption if compliance is built in." : "Differentiate through speed of execution rather than exclusive timing."
+      ]
     )
   };
 
-  const risks = buildRisks(text, competitionRisk, distributionLevel, buildDifficulty);
-  const opportunities = buildOpportunities(text, demandLevel, monetizationLevel);
+  const risks = buildRisks(text, competitionRisk, distributionLevel, buildDifficulty, growthScore, timelineScore);
+  const opportunities = buildOpportunities(text, demandLevel, monetizationLevel, growthLevel, timelineLevel);
   const recommendation = buildRecommendation(decision, text, score);
   const shareText = `My startup idea scored ${score}/100 on ShipOrSkip.\n\nVerdict: ${decision}\n\nTry your idea at shiporskip.com`;
   const report = {

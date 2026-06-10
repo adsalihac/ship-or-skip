@@ -6,6 +6,10 @@ export type DifficultyLevel = "Easy" | "Medium" | "Hard";
 
 export type MonetizationLevel = "Easy" | "Moderate" | "Difficult";
 
+export type GrowthLevel = "Low" | "Moderate" | "High";
+
+export type TimelineLevel = "Urgent" | "Neutral" | "Early";
+
 export type ScoreMetric = {
   name: string;
   score: number;
@@ -15,7 +19,7 @@ export type ScoreMetric = {
 
 export type AnalysisSection = {
   title: string;
-  verdict: SignalLevel | DifficultyLevel | MonetizationLevel;
+  verdict: string;
   rationale: string;
   bullets: string[];
 };
@@ -33,6 +37,8 @@ export type AnalysisReport = {
     monetization: AnalysisSection;
     buildComplexity: AnalysisSection;
     distribution: AnalysisSection;
+    growthPotential: AnalysisSection;
+    timelineFit: AnalysisSection;
   };
   risks: string[];
   opportunities: string[];

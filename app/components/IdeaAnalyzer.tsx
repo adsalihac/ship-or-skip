@@ -1,10 +1,11 @@
 "use client";
 
-import { BarChart3, FileText, Loader2, Search } from "lucide-react";
+import { BarChart3, FileText, Loader2, Play, RefreshCw, Search } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { analyzeIdea } from "../actions";
 import { trackEvent } from "../lib/analytics-client";
 import type { AnalysisReport } from "../lib/types";
+import { RecentReports, saveReport } from "./RecentReports";
 import { ReportView } from "./ReportView";
 
 const ideaExamples = [
@@ -52,6 +53,7 @@ export function IdeaAnalyzer() {
 
       setReport(result.report);
       setShouldScrollToReport(true);
+      saveReport(result.report);
       trackEvent("report_generation", {
         decision: result.report.decision,
         score: result.report.score
@@ -66,6 +68,23 @@ export function IdeaAnalyzer() {
     trackEvent("conversion_event", {
       action: "idea_example_selected",
       example
+    });
+  }
+
+  async function runSample() {
+    const sample = "AI expense tracker for freelancers that auto-categorizes receipts and generates tax-ready reports";
+    setIdea(sample);
+    setReport(null);
+    setError("");
+
+    startTransition(async () => {
+      const result = await analyzeIdea(sample);
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      setReport(result.report);
+      setShouldScrollToReport(true);
     });
   }
 
@@ -135,7 +154,19 @@ export function IdeaAnalyzer() {
 
         <div id="analysis" className="mt-6 min-w-0 scroll-mt-20">
           {report ? (
-            <ReportView report={report} />
+            <>
+              <ReportView report={report} />
+              <div className="mt-3 flex">
+                <button
+                  type="button"
+                  onClick={() => { setReport(null); setIdea(""); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  className="inline-flex items-center gap-1.5 text-[13px] font-medium text-muted transition hover:text-foreground"
+                >
+                  <RefreshCw className="size-3.5" aria-hidden="true" />
+                  Analyze a new idea
+                </button>
+              </div>
+            </>
           ) : (
             <div className="rounded-xl border border-border bg-white p-5 shadow-sm">
               <div className="flex items-start justify-between gap-4">
@@ -143,7 +174,7 @@ export function IdeaAnalyzer() {
                   <p className="text-[13px] font-semibold uppercase text-muted">Analysis Preview</p>
                   <h2 className="mt-2 text-[24px] font-bold text-foreground">Structured founder report</h2>
                   <p className="mt-2 max-w-2xl text-[15px] leading-6 text-muted">
-                    One decision score, six evaluation dimensions, and a practical recommendation.
+                    One decision score, eight evaluation dimensions, and a practical recommendation.
                   </p>
                 </div>
                 <div className="rounded-xl border border-border bg-surface px-4 py-3 text-right">
@@ -152,8 +183,19 @@ export function IdeaAnalyzer() {
                 </div>
               </div>
 
-              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-                {["Market Demand", "Competition", "Monetization", "Execution Difficulty", "Distribution Difficulty", "Founder Advantage"].map((metric, index) => (
+              <div className="mt-5 mb-2">
+                <button
+                  type="button"
+                  onClick={runSample}
+                  disabled={isPending}
+                  className="inline-flex items-center gap-2 rounded-lg border border-foreground/20 bg-foreground/5 px-4 py-2 text-[13px] font-semibold text-foreground transition hover:bg-foreground/10 disabled:opacity-50"
+                >
+                  {isPending ? <Loader2 className="size-3.5 animate-spin" aria-hidden="true" /> : <Play className="size-3.5" aria-hidden="true" />}
+                  Run sample analysis
+                </button>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+                {["Market Demand", "Competition", "Monetization", "Execution Difficulty", "Distribution Difficulty", "Founder Advantage", "Growth Potential", "Timeline Fit"].map((metric, index) => (
                   <div key={metric} className="rounded-xl border border-border bg-surface p-4">
                     <div className="flex items-center justify-between gap-3">
                       <span className="text-[13px] font-semibold text-muted">{metric}</span>
@@ -182,8 +224,9 @@ export function IdeaAnalyzer() {
             </div>
           )}
         </div>
-      </section>
 
+        <RecentReports onSelect={(r) => { setReport(r); setShouldScrollToReport(true); }} />
+      </section>
     </>
   );
 }
